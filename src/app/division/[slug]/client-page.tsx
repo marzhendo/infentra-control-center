@@ -13,7 +13,8 @@ import { format } from 'date-fns'
 import { Plus, Search, ExternalLink, Edit, AlertCircle, Clock, Trash } from 'lucide-react'
 import { TaskDialog } from '@/components/division/task-dialog'
 import { getTaskDateStatus } from '@/utils/task-status'
-import { deleteTask } from './actions'
+import { Checkbox } from '@/components/ui/checkbox'
+import { deleteTask, updateTask } from './actions'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -89,6 +90,16 @@ export function DivisionClientPage({ division, initialTasks, slug }: { division:
     }
   }
 
+  const handleToggleCompletion = async (task: Task, checked: boolean) => {
+    try {
+      const newStatus = checked ? 'Done' : 'In Progress'
+      const newProgress = checked ? 100 : 0
+      await updateTask(task.id, { status: newStatus, progress: newProgress }, slug)
+    } catch (error) {
+      console.error('Failed to toggle task:', error)
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Header Stats */}
@@ -158,6 +169,7 @@ export function DivisionClientPage({ division, initialTasks, slug }: { division:
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12"></TableHead>
               <TableHead>Task</TableHead>
               <TableHead>PIC</TableHead>
               <TableHead>Deadline</TableHead>
@@ -176,7 +188,13 @@ export function DivisionClientPage({ division, initialTasks, slug }: { division:
             ) : (
               filteredTasks.map((task) => (
                 <TableRow key={task.id}>
-                  <TableCell className="font-medium">
+                  <TableCell>
+                    <Checkbox 
+                      checked={task.status === 'Done'} 
+                      onCheckedChange={(checked) => handleToggleCompletion(task, checked as boolean)} 
+                    />
+                  </TableCell>
+                  <TableCell className={`font-medium ${task.status === 'Done' ? 'line-through text-slate-500' : ''}`}>
                     {task.title}
                     {task.link_attachment && (
                       <a href={task.link_attachment} target="_blank" rel="noopener noreferrer" className="inline-flex ml-2 text-muted-foreground hover:text-primary">

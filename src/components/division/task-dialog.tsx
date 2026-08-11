@@ -40,8 +40,8 @@ export function TaskDialog({ open, onOpenChange, task, divisionId, slug }: TaskD
       title: formData.get('title') as string,
       pic: formData.get('pic') as string,
       deadline: formData.get('deadline') as string,
-      status: formData.get('status') as Task['status'],
-      progress: Number(formData.get('progress')),
+      status: isEditing ? (formData.get('status') as Task['status']) : 'Not Started',
+      progress: isEditing ? Number(formData.get('progress')) : 0,
       link_attachment: (formData.get('link_attachment') as string) || null,
       division_id: divisionId,
     }
@@ -91,36 +91,40 @@ export function TaskDialog({ open, onOpenChange, task, divisionId, slug }: TaskD
                 required 
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="status" className="text-right">Status</Label>
-              <div className="col-span-3">
-                <Select name="status" defaultValue={task?.status || 'Not Started'} required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Not Started">Not Started</SelectItem>
-                    <SelectItem value="In Progress">In Progress</SelectItem>
-                    <SelectItem value="Waiting Review">Waiting Review</SelectItem>
-                    <SelectItem value="Done">Done</SelectItem>
-                    <SelectItem value="Overdue">Overdue</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="progress" className="text-right">Progress (%)</Label>
-              <Input 
-                id="progress" 
-                name="progress" 
-                type="number" 
-                min="0" 
-                max="100" 
-                defaultValue={task?.progress || 0} 
-                className="col-span-3" 
-                required 
-              />
-            </div>
+            {isEditing && (
+              <>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="status" className="text-right">Status</Label>
+                  <div className="col-span-3">
+                    <Select name="status" defaultValue={task?.status || 'Not Started'} required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Not Started">Not Started</SelectItem>
+                        <SelectItem value="In Progress">In Progress</SelectItem>
+                        <SelectItem value="Waiting Review">Waiting Review</SelectItem>
+                        <SelectItem value="Done">Done</SelectItem>
+                        <SelectItem value="Overdue">Overdue</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="progress" className="text-right">Progress (%)</Label>
+                  <Input 
+                    id="progress" 
+                    name="progress" 
+                    type="number" 
+                    min="0" 
+                    max="100" 
+                    defaultValue={task?.progress || 0} 
+                    className="col-span-3" 
+                    required 
+                  />
+                </div>
+              </>
+            )}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="link_attachment" className="text-right">Link</Label>
               <Input 
