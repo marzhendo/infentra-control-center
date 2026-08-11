@@ -38,8 +38,9 @@ export function useRealtimeTasks(initialTasks: Task[], divisionId: string) {
 
     return () => {
       supabase.removeChannel(channel)
+      channel.unsubscribe()
     }
   }, [divisionId, supabase, initialTasks])
 
-  return tasks
+  return { tasks, setTasks }
 }

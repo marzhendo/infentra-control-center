@@ -9,7 +9,7 @@ export default async function DivisionPage({ params }: { params: Promise<{ slug:
   // Fetch division
   const { data: division } = await supabase
     .from('divisions')
-    .select('*')
+    .select('id, name, slug, target_progress')
     .eq('slug', slug)
     .single()
 
@@ -20,7 +20,7 @@ export default async function DivisionPage({ params }: { params: Promise<{ slug:
   // Fetch initial tasks for this division
   const { data: initialTasks } = await supabase
     .from('tasks')
-    .select('*')
+    .select('id, division_id, title, pic, deadline, status, progress, link_attachment, created_at')
     .eq('division_id', division.id)
     .order('created_at', { ascending: false })
 
