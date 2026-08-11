@@ -6,24 +6,47 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       divisions: {
         Row: {
           id: string
           name: string
+          slug: string
           target_progress: number
         }
         Insert: {
           id?: string
           name: string
+          slug: string
           target_progress?: number
         }
         Update: {
           id?: string
           name?: string
+          slug?: string
           target_progress?: number
+        }
+      }
+      profiles: {
+        Row: {
+          id: string
+          email: string | null
+          role: 'master_admin' | 'division_admin'
+          division_slug: string | null
+        }
+        Insert: {
+          id: string
+          email?: string | null
+          role?: 'master_admin' | 'division_admin'
+          division_slug?: string | null
+        }
+        Update: {
+          id?: string
+          email?: string | null
+          role?: 'master_admin' | 'division_admin'
+          division_slug?: string | null
         }
       }
       tasks: {
@@ -84,6 +107,18 @@ export interface Database {
           description?: string | null
         }
       }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      user_role: 'master_admin' | 'division_admin'
+    }
+    CompositeTypes: {
+      [_ in never]: never
     }
   }
 }
