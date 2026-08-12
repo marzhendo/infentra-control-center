@@ -64,16 +64,20 @@ export function TimelineClientPage({ initialEvents }: { initialEvents: UnifiedTi
     : []
 
   // Create modifiers for the calendar
-  const eventDays = initialEvents.map(e => new Date(e.date))
+  const redDotDays = initialEvents.filter(e => e.type === 'task').map(e => new Date(e.date))
+  const cyanDotDays = initialEvents.filter(e => e.category === 'Milestone' || e.category === 'Event Day').map(e => new Date(e.date))
+  const purpleDotDays = initialEvents.filter(e => e.category === 'Internal' || e.category === 'Oprec').map(e => new Date(e.date))
+
   const modifiers = {
-    hasEvent: eventDays
+    redDot: redDotDays,
+    cyanDot: cyanDotDays,
+    purpleDot: purpleDotDays,
   }
 
-  const modifiersStyles = {
-    hasEvent: {
-      fontWeight: 'bold',
-      borderBottom: '2px solid currentColor'
-    }
+  const modifiersClassNames = {
+    redDot: "relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:bg-red-500 after:rounded-full font-bold",
+    cyanDot: "relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:bg-cyan-500 after:rounded-full font-bold",
+    purpleDot: "relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:bg-purple-500 after:rounded-full font-bold",
   }
 
   const categories = ['All', 'Milestone', 'Event Day', 'Internal', 'Division Task', 'Oprec']
@@ -97,7 +101,7 @@ export function TimelineClientPage({ initialEvents }: { initialEvents: UnifiedTi
             onSelect={setDate}
             className="rounded-md border shadow"
             modifiers={modifiers}
-            modifiersStyles={modifiersStyles}
+            modifiersClassNames={modifiersClassNames}
           />
         </div>
 
@@ -121,8 +125,11 @@ export function TimelineClientPage({ initialEvents }: { initialEvents: UnifiedTi
                 return (
                   <ItemWrapper key={event.id} {...itemProps as any} className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg bg-muted/50 ${isTask ? 'hover:bg-muted/80 hover:border-red-500/50 cursor-pointer transition-colors' : ''}`}>
                     <div className="space-y-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <h4 className="font-semibold text-lg">{event.event_name}</h4>
+                        {isTask && new Date(event.date) < new Date() && (
+                          <Badge variant="destructive" className="bg-red-600 font-bold">OVERDUE</Badge>
+                        )}
                         {getCategoryBadge(event.category)}
                       </div>
                       {event.description && (
@@ -177,7 +184,12 @@ export function TimelineClientPage({ initialEvents }: { initialEvents: UnifiedTi
                         <span className="font-medium">{event.event_name}</span>
                         <span className="text-xs text-muted-foreground">{format(new Date(event.date), 'MMM dd, yyyy')}</span>
                       </div>
-                      {getCategoryBadge(event.category)}
+                      <div className="flex items-center gap-2">
+                        {isTask && new Date(event.date) < new Date() && (
+                          <Badge variant="destructive" className="bg-red-600 text-[10px] px-1 py-0 h-4">OVERDUE</Badge>
+                        )}
+                        {getCategoryBadge(event.category)}
+                      </div>
                     </ItemWrapper>
                   )
                 })

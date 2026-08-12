@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { format } from 'date-fns'
+import { format, endOfWeek } from 'date-fns'
 import { Plus, Search, ExternalLink, Edit, AlertCircle, Clock, Trash } from 'lucide-react'
 import { TaskDialog } from '@/components/division/task-dialog'
 import { getTaskDateStatus } from '@/utils/task-status'
@@ -152,6 +152,17 @@ export function DivisionClientPage({ division, initialTasks, slug }: { division:
       : 0
   }, [tasks])
 
+  const calculatedTargetProgress = React.useMemo(() => {
+    if (tasks.length === 0) return 0;
+    const endOfCurrentWeek = endOfWeek(new Date(), { weekStartsOn: 1 })
+    const tasksDueThisWeek = tasks.filter(t => new Date(t.deadline) <= endOfCurrentWeek)
+    return Math.round((tasksDueThisWeek.length / tasks.length) * 100)
+  }, [tasks])
+
+  const overdueCount = React.useMemo(() => {
+    return tasks.filter(t => getTaskDateStatus(t.deadline, t.status) === 'overdue').length
+  }, [tasks])
+
   const openNewTaskDialog = React.useCallback(() => {
     setEditingTask(null)
     setIsDialogOpen(true)
@@ -227,8 +238,16 @@ export function DivisionClientPage({ division, initialTasks, slug }: { division:
             <h3 className="tracking-tight text-sm font-medium">Target Progress</h3>
           </div>
           <div className="pt-4">
-            <div className="text-2xl font-bold">{division.target_progress}%</div>
+            <div className="text-2xl font-bold">{calculatedTargetProgress}%</div>
             <p className="text-xs text-muted-foreground mt-2">Target for this week</p>
+          </div>
+        </div>
+        <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="tracking-tight text-sm font-medium">Overdue Tasks</h3>
+          </div>
+          <div className="pt-4">
+            <div className={`text-2xl font-bold ${overdueCount > 0 ? 'text-red-500' : ''}`}>{overdueCount}</div>
           </div>
         </div>
         <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6">

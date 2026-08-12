@@ -6,8 +6,6 @@ import { Database } from '@/types/database'
 import Link from 'next/link'
 import { format } from 'date-fns'
 
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
@@ -39,9 +37,9 @@ export function StatCards({ divisions, tasks, totalTasks, completedTasks, overdu
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       
-      {/* 1. Total Divisions - Popover */}
-      <Popover>
-        <PopoverTrigger className="text-left rounded-xl border bg-card text-card-foreground shadow-sm p-6 cursor-pointer hover:bg-muted/50 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring">
+      {/* 1. Total Divisions - Dialog */}
+      <Dialog>
+        <DialogTrigger className="text-left rounded-xl border bg-card text-card-foreground shadow-sm p-6 cursor-pointer hover:bg-muted/50 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
             <h3 className="tracking-tight text-sm font-medium">Total Divisions</h3>
             <ListTodo className="h-4 w-4 text-muted-foreground" />
@@ -49,30 +47,30 @@ export function StatCards({ divisions, tasks, totalTasks, completedTasks, overdu
           <div className="pt-4">
             <div className="text-2xl font-bold">{divisions.length}</div>
           </div>
-        </PopoverTrigger>
-        <PopoverContent className="w-80">
-          <div className="space-y-4">
-            <h4 className="font-medium leading-none">Divisions Progress</h4>
-            <div className="flex flex-col gap-3 max-h-64 overflow-y-auto pr-2">
-              {divisions.map(div => (
-                <div key={div.id} className="flex flex-col gap-1">
-                  <div className="flex justify-between items-center text-sm">
-                    <Link href={`/division/${div.slug}`} className="font-medium hover:underline flex items-center gap-1">
-                      {div.name} <ExternalLink className="h-3 w-3" />
-                    </Link>
-                    <span>{div.currentProgress}%</span>
-                  </div>
-                  <Progress value={div.currentProgress} className="h-1.5" />
+        </DialogTrigger>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Divisions Progress Overview</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4 flex flex-col gap-4 px-2">
+            {divisions.map(div => (
+              <div key={div.id} className="flex flex-col gap-2 p-4 rounded-lg border bg-muted/20">
+                <div className="flex justify-between items-center text-sm">
+                  <Link href={`/division/${div.slug}`} className="font-semibold text-lg hover:underline flex items-center gap-2">
+                    {div.name} <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                  </Link>
+                  <span className="font-bold">{div.currentProgress}%</span>
                 </div>
-              ))}
-            </div>
+                <Progress value={div.currentProgress} className="h-2" />
+              </div>
+            ))}
           </div>
-        </PopoverContent>
-      </Popover>
+        </DialogContent>
+      </Dialog>
 
-      {/* 2 & 3. Total Tasks & Completed Tasks - Sheet */}
-      <Sheet>
-        <SheetTrigger 
+      {/* 2. Total Tasks - Dialog */}
+      <Dialog>
+        <DialogTrigger 
           onClick={() => setTaskFilter('All')} 
           className="text-left rounded-xl border bg-card text-card-foreground shadow-sm p-6 cursor-pointer hover:bg-muted/50 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
@@ -83,48 +81,16 @@ export function StatCards({ divisions, tasks, totalTasks, completedTasks, overdu
           <div className="pt-4">
             <div className="text-2xl font-bold">{totalTasks}</div>
           </div>
-        </SheetTrigger>
-        <SheetTrigger 
-          onClick={() => setTaskFilter('Completed')} 
-          className="text-left rounded-xl border bg-card text-card-foreground shadow-sm p-6 cursor-pointer hover:bg-muted/50 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Completed Tasks</h3>
-            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-          </div>
-          <div className="pt-4">
-            <div className="text-2xl font-bold">{completedTasks}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}% of total
-            </p>
-          </div>
-        </SheetTrigger>
-
-        <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>Task Overview ({taskFilter})</SheetTitle>
-          </SheetHeader>
-          <div className="mt-6 flex gap-2">
-            <Badge 
-              variant={taskFilter === 'All' ? 'default' : 'outline'} 
-              className="cursor-pointer"
-              onClick={() => setTaskFilter('All')}
-            >
-              All Tasks
-            </Badge>
-            <Badge 
-              variant={taskFilter === 'Completed' ? 'default' : 'outline'} 
-              className="cursor-pointer"
-              onClick={() => setTaskFilter('Completed')}
-            >
-              Completed
-            </Badge>
-          </div>
-          <div className="mt-6 flex flex-col gap-4">
-            {filteredTasks.length === 0 && (
+        </DialogTrigger>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>All Tasks Overview</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4 flex flex-col gap-3 px-2 pb-4">
+            {tasks.length === 0 && (
               <p className="text-muted-foreground text-sm text-center py-4">No tasks found.</p>
             )}
-            {filteredTasks.map(task => (
+            {tasks.map(task => (
               <div key={task.id} className="p-4 rounded-lg border bg-card flex flex-col gap-2">
                 <div className="flex justify-between items-start">
                   <h4 className="font-medium text-sm">{task.title}</h4>
@@ -139,8 +105,51 @@ export function StatCards({ divisions, tasks, totalTasks, completedTasks, overdu
               </div>
             ))}
           </div>
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
+
+      {/* 3. Completed Tasks - Dialog */}
+      <Dialog>
+        <DialogTrigger 
+          onClick={() => setTaskFilter('Completed')} 
+          className="text-left rounded-xl border bg-card text-card-foreground shadow-sm p-6 cursor-pointer hover:bg-muted/50 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 className="tracking-tight text-sm font-medium">Completed Tasks</h3>
+            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+          </div>
+          <div className="pt-4">
+            <div className="text-2xl font-bold">{completedTasks}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}% of total
+            </p>
+          </div>
+        </DialogTrigger>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Completed Tasks Overview</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4 flex flex-col gap-3 px-2 pb-4">
+            {tasks.filter(t => t.status === 'Done').length === 0 && (
+              <p className="text-muted-foreground text-sm text-center py-4">No completed tasks yet.</p>
+            )}
+            {tasks.filter(t => t.status === 'Done').map(task => (
+              <div key={task.id} className="p-4 rounded-lg border bg-emerald-500/10 flex flex-col gap-2 border-emerald-500/20">
+                <div className="flex justify-between items-start">
+                  <h4 className="font-medium text-sm line-through text-slate-500">{task.title}</h4>
+                  <Badge variant="default" className="text-[10px] bg-emerald-500">
+                    Done
+                  </Badge>
+                </div>
+                <div className="flex justify-between items-center text-xs text-muted-foreground">
+                  <span>{getDivisionName(task.division_id)}</span>
+                  <span>PIC: {task.pic}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* 4. Overdue Tasks - Dialog */}
       <Dialog>
@@ -159,7 +168,7 @@ export function StatCards({ divisions, tasks, totalTasks, completedTasks, overdu
               <Clock className="w-5 h-5" /> Overdue Tasks Action Required
             </DialogTitle>
           </DialogHeader>
-          <div className="mt-4 flex flex-col gap-3">
+          <div className="mt-4 flex flex-col gap-3 px-2 pb-4">
             {overdueTasksList.length === 0 ? (
               <p className="text-muted-foreground text-sm text-center py-8">Great job! No overdue tasks.</p>
             ) : (
