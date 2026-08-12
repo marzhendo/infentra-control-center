@@ -20,14 +20,14 @@ export default async function LoginPage({
           </CardDescription>
         </CardHeader>
         <form action={login}>
-          <CardContent className="grid gap-4">
-            <div className="grid gap-2">
+          <CardContent className="grid gap-5">
+            <div className="grid gap-2 space-y-1">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" placeholder="m@example.com" required />
+              <Input id="email" name="email" type="email" placeholder="acara@infentra.com" required />
             </div>
-            <div className="grid gap-2">
+            <div className="grid gap-2 space-y-1">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" name="password" type="password" required />
+              <Input id="password" name="password" type="password" placeholder="••••••••" required />
             </div>
             {params?.message && (
               <p className="text-sm text-red-500 font-medium text-center">
@@ -35,7 +35,7 @@ export default async function LoginPage({
               </p>
             )}
           </CardContent>
-          <CardFooter>
+          <CardFooter className="pt-2 mt-2">
             <Button className="w-full" type="submit">Sign In</Button>
           </CardFooter>
         </form>
