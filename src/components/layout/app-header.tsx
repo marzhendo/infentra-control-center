@@ -26,7 +26,7 @@ export function AppHeader() {
   }
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 justify-between">
+    <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 px-4 justify-between backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800">
       <div className="flex items-center gap-2">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="h-4" />

@@ -15,7 +15,7 @@ export default async function GlobalDashboard() {
   
   // Fetch all divisions and tasks
   const { data: divisions } = await supabase.from('divisions').select('*').order('name')
-  const { data: tasks } = await supabase.from('tasks').select('*')
+  const { data: tasks } = await supabase.from('tasks').select('id, division_id, title, pic, deadline, status, progress, priority, link_attachment, created_at')
   
   const divList = (divisions || []) as Division[]
   const taskList = (tasks || []) as Task[]
@@ -38,21 +38,26 @@ export default async function GlobalDashboard() {
     
     let overdueCount = 0
     let nearDeadlineCount = 0
+    let highPriorityRiskCount = 0
 
     divTasks.forEach(t => {
       const status = getTaskDateStatus(t.deadline, t.status)
       if (status === 'overdue') {
         overdueCount++
       } else if (status === 'approaching' && t.status !== 'Done' && t.progress < 50) {
-        nearDeadlineCount++
+        if (t.priority === 'High') {
+          highPriorityRiskCount++
+        } else {
+          nearDeadlineCount++
+        }
       }
     })
     
     const isBehindTarget = currentProgress < div.target_progress
-    const isAtRisk = overdueCount > 0 || nearDeadlineCount > 0 || isBehindTarget
+    const isAtRisk = overdueCount > 0 || highPriorityRiskCount > 0 || nearDeadlineCount > 0 || isBehindTarget
 
     let highestRiskLevel: 'critical' | 'warning' | 'lag' | null = null
-    if (overdueCount > 0) highestRiskLevel = 'critical'
+    if (overdueCount > 0 || highPriorityRiskCount > 0) highestRiskLevel = 'critical'
     else if (nearDeadlineCount > 0) highestRiskLevel = 'warning'
     else if (isBehindTarget) highestRiskLevel = 'lag'
 
@@ -63,7 +68,8 @@ export default async function GlobalDashboard() {
       highestRiskLevel,
       taskCount: divTasks.length,
       overdueCount,
-      nearDeadlineCount
+      nearDeadlineCount,
+      highPriorityRiskCount
     }
   })
 
@@ -129,7 +135,12 @@ export default async function GlobalDashboard() {
                     borderColor = 'border-red-500/20 dark:border-red-500/30'
                     textColor = 'text-red-600 dark:text-red-400'
                     Icon = AlertTriangle
-                    riskMessage = `${div.overdueCount} Overdue Task${div.overdueCount > 1 ? 's' : ''}`
+                    
+                    if (div.overdueCount > 0) {
+                      riskMessage = `${div.overdueCount} Overdue Task${div.overdueCount > 1 ? 's' : ''}`
+                    } else {
+                      riskMessage = `${div.highPriorityRiskCount} HIGH Priority Task${div.highPriorityRiskCount > 1 ? 's' : ''} Near Deadline`
+                    }
                   } else if (div.highestRiskLevel === 'warning') {
                     bgColor = 'bg-amber-500/10 dark:bg-amber-500/20'
                     borderColor = 'border-amber-500/20 dark:border-amber-500/30'

@@ -41,6 +41,15 @@ const getStatusBadge = (status: string) => {
   }
 }
 
+const getPriorityBadge = (priority: string) => {
+  switch (priority) {
+    case 'High': return <Badge variant="outline" className="bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20">High</Badge>
+    case 'Medium': return <Badge variant="outline" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20">Medium</Badge>
+    case 'Low': return <Badge variant="outline" className="bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20">Low</Badge>
+    default: return <Badge variant="outline">{priority}</Badge>
+  }
+}
+
 // Extract TaskRow and memoize it to prevent re-renders of the whole table
 const TaskRow = React.memo(({ 
   task, 
@@ -76,7 +85,7 @@ const TaskRow = React.memo(({
             ${getTaskDateStatus(task.deadline, task.status) === 'overdue' ? 'text-destructive font-medium' : ''}
             ${getTaskDateStatus(task.deadline, task.status) === 'approaching' ? 'text-amber-500 font-medium' : ''}
           `}>
-            {format(new Date(task.deadline), 'MMM dd, yyyy')}
+            {format(new Date(task.deadline), 'dd MMM yyyy')}
           </span>
           {getTaskDateStatus(task.deadline, task.status) === 'overdue' && (
             <Badge variant="destructive" className="text-[10px] h-4 px-1 py-0 gap-1">
@@ -90,6 +99,7 @@ const TaskRow = React.memo(({
           )}
         </div>
       </TableCell>
+      <TableCell>{getPriorityBadge(task.priority)}</TableCell>
       <TableCell>{getStatusBadge(task.status)}</TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
@@ -272,6 +282,7 @@ export function DivisionClientPage({ division, initialTasks, slug }: { division:
               <TableHead>Task</TableHead>
               <TableHead>PIC</TableHead>
               <TableHead>Deadline</TableHead>
+              <TableHead>Priority</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="w-[200px]">Progress</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -280,7 +291,7 @@ export function DivisionClientPage({ division, initialTasks, slug }: { division:
           <TableBody>
             {filteredTasks.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center">
+                <TableCell colSpan={8} className="h-24 text-center">
                   No tasks found.
                 </TableCell>
               </TableRow>

@@ -42,6 +42,7 @@ export function TaskDialog({ open, onOpenChange, task, divisionId, slug }: TaskD
       deadline: formData.get('deadline') as string,
       status: isEditing ? (formData.get('status') as Task['status']) : 'Not Started',
       progress: isEditing ? Number(formData.get('progress')) : 0,
+      priority: (formData.get('priority') as Task['priority']) || 'Medium',
       link_attachment: (formData.get('link_attachment') as string) || null,
       division_id: divisionId,
     }
@@ -125,6 +126,21 @@ export function TaskDialog({ open, onOpenChange, task, divisionId, slug }: TaskD
                 </div>
               </>
             )}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="priority" className="text-right">Priority</Label>
+              <div className="col-span-3">
+                <Select name="priority" defaultValue={task?.priority || 'Medium'} required>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="High">High</SelectItem>
+                    <SelectItem value="Medium">Medium</SelectItem>
+                    <SelectItem value="Low">Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="link_attachment" className="text-right">Link</Label>
               <Input 

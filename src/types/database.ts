@@ -58,6 +58,7 @@ export type Database = {
           deadline: string
           status: 'Not Started' | 'In Progress' | 'Waiting Review' | 'Done' | 'Overdue'
           progress: number
+          priority: 'Low' | 'Medium' | 'High'
           link_attachment: string | null
           created_at: string
         }
@@ -69,6 +70,7 @@ export type Database = {
           deadline: string
           status: 'Not Started' | 'In Progress' | 'Waiting Review' | 'Done' | 'Overdue'
           progress?: number
+          priority?: 'Low' | 'Medium' | 'High'
           link_attachment?: string | null
           created_at?: string
         }
@@ -80,6 +82,7 @@ export type Database = {
           deadline?: string
           status?: 'Not Started' | 'In Progress' | 'Waiting Review' | 'Done' | 'Overdue'
           progress?: number
+          priority?: 'Low' | 'Medium' | 'High'
           link_attachment?: string | null
           created_at?: string
         }
@@ -116,6 +119,7 @@ export type Database = {
     }
     Enums: {
       user_role: 'master_admin' | 'division_admin'
+      task_priority: 'Low' | 'Medium' | 'High'
     }
     CompositeTypes: {
       [_ in never]: never
