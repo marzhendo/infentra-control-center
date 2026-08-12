@@ -55,7 +55,6 @@ export async function updateSession(request: NextRequest) {
       if (
         pathname.startsWith('/login') || 
         pathname === '/' || 
-        pathname === '/timeline' || 
         (pathname.startsWith('/division/') && pathname !== allowedPath)
       ) {
         const url = request.nextUrl.clone()
