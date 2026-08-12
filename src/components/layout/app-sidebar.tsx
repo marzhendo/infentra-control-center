@@ -20,6 +20,7 @@ const items = [
     title: "Dashboard",
     url: "/",
     icon: LayoutDashboard,
+    masterOnly: true,
   },
   {
     title: "Master Timeline",
@@ -47,27 +48,29 @@ export async function AppSidebar() {
     divList = divList.filter((div: any) => div.slug === profile.division_slug)
   }
 
+  const visibleItems = items.filter(item => {
+    if (isDivisionAdmin && item.masterOnly) return false
+    return true
+  })
+
   return (
     <Sidebar>
       <SidebarContent>
-        {/* Hide Main Menu for Division Admins */}
-        {!isDivisionAdmin && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Main Menu</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton render={<Link href={item.url} />}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
+        <SidebarGroup>
+          <SidebarGroupLabel>Main Menu</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {visibleItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton render={<Link href={item.url} prefetch={true} />}>
+                    <item.icon />
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
         <SidebarGroup>
           <SidebarGroupLabel>{isDivisionAdmin ? 'My Division' : 'Divisions'}</SidebarGroupLabel>
