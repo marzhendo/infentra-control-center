@@ -54,6 +54,16 @@ export default async function TimelinePage() {
   // Sort unified events by date
   unifiedEvents.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
+  // Fetch user role
+  const { data: { user } } = await supabase.auth.getUser()
+  let userRole = 'division_admin'
+  if (user) {
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    if (profile) {
+      userRole = profile.role
+    }
+  }
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -62,7 +72,7 @@ export default async function TimelinePage() {
           <p className="text-muted-foreground">Keep track of important milestones, oprec, event days, and high-priority tasks.</p>
         </div>
       </div>
-      <TimelineClientPage initialEvents={unifiedEvents} />
+      <TimelineClientPage initialEvents={unifiedEvents} userRole={userRole} />
     </div>
   )
 }

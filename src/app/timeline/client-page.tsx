@@ -21,10 +21,12 @@ export type UnifiedTimelineItem = {
   division_slug?: string | null
 }
 
-export function TimelineClientPage({ initialEvents }: { initialEvents: UnifiedTimelineItem[] }) {
+export function TimelineClientPage({ initialEvents, userRole }: { initialEvents: UnifiedTimelineItem[], userRole?: string }) {
   const [date, setDate] = React.useState<Date | undefined>(new Date())
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
   const [selectedCategory, setSelectedCategory] = React.useState<string>('All')
+  
+  const isMasterAdmin = userRole === 'master_admin'
 
   const openNewEventDialog = () => {
     setIsDialogOpen(true)
@@ -86,9 +88,11 @@ export function TimelineClientPage({ initialEvents }: { initialEvents: UnifiedTi
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex-1" />
-        <Button onClick={openNewEventDialog}>
-          <Plus className="mr-2 h-4 w-4" /> Add Event
-        </Button>
+        {isMasterAdmin && (
+          <Button onClick={openNewEventDialog}>
+            <Plus className="mr-2 h-4 w-4" /> Add Event
+          </Button>
+        )}
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -136,7 +140,7 @@ export function TimelineClientPage({ initialEvents }: { initialEvents: UnifiedTi
                         <p className="text-sm text-muted-foreground">{event.description}</p>
                       )}
                     </div>
-                    {!isTask && (
+                    {!isTask && isMasterAdmin && (
                       <Button variant="ghost" size="icon" onClick={(e) => { e.preventDefault(); handleDelete(event.original_id, event.type) }} className="text-destructive mt-2 sm:mt-0">
                         <Trash2 className="h-4 w-4" />
                       </Button>
